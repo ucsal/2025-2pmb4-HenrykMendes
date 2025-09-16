@@ -16,9 +16,16 @@ class DrawingPanel extends JPanel {
     private static final int DEFAULT_SIZE = 60;
     private final List<Shape> shapes = new ArrayList<>();
     private Point startDrag = null;
+    private InterfaceFactory interfaceFactory;
 
-    DrawingPanel() {
-        
+    DrawingPanel()
+    {
+        this(new BallFactory());
+
+    }
+
+    DrawingPanel(InterfaceFactory interfaceFactory) {
+        this.interfaceFactory = interfaceFactory;
         setBackground(Color.WHITE);
         setOpaque(true);
         setDoubleBuffered(true);
@@ -27,8 +34,9 @@ class DrawingPanel extends JPanel {
             @Override public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 1 && startDrag == null) {
                     int size = Math.max(Math.min(DEFAULT_SIZE, DEFAULT_SIZE), 10);
-                    Shape s =  new Ellipse2D.Double(e.getPoint().x, e.getPoint().y, size, size);
+                    Shape s = interfaceFactory.createShape(e.getPoint(), size);
                     //return new Rectangle2D.Double(e.getPoint().x, e.getPoint().y, Math.max(DEFAULT_SIZE, 10), Math.max(DEFAULT_SIZE, 10));
+
                     shapes.add(s);
                     repaint();
                 }
@@ -38,7 +46,10 @@ class DrawingPanel extends JPanel {
         addMouseMotionListener(mouse);
 
     }
+    void setInterfaceFactory(InterfaceFactory interfaceFactory) {
 
+        this.interfaceFactory = interfaceFactory;
+    }
     void clear() {
         shapes.clear();
         repaint();
